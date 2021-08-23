@@ -1,0 +1,177 @@
+create table sailors(
+Sid int NOT NULL,
+Sname varchar(100) NOT NULL,
+Rating int NOT NULL,
+age double NOT NULL,
+PRIMARY KEY(Sid)
+);
+
+
+insert into sailors
+values(22,"Dustin",7,45.0),(29,"Brutus",1,33.0),
+      (31,"Lubber",9,55.0),(32,"Andy",8,25.0),
+      (58,"Rusty",10,35);
+
+
+-------------------------------------------------------------------------
+
+create table boats(
+Bid int NOT NULL,
+Bname varchar(100) NOT NULL,
+Color varchar(100) NOT NULL,
+PRIMARY KEY(BId)
+);
+
+insert into boats
+values(101,"Interlake","Blue"),(102,"Interlake","Red"),
+       (103,"Clipper","Green"),(104,"Marine","Red");	
+
+
+-------------------------------------------------------------------------
+
+create table reserves
+(
+Sid int NOT NULL,
+Bid int NOT NULL,
+Day date,
+FOREIGN KEY(Sid) References sailors(Sid),
+FOREIGN KEY(Bid) References boats(Bid) 
+);
+
+insert into reserves
+values(22,101,"2004-01-01"),(22,102,"2004-01-01"),(22,103,"2004-02-01"),
+      (31,103,"2005-05-05"),(32,104,"2005-04-07");
+
+
+ select * from sailors;
++-----+--------+--------+-----+
+| Sid | Sname  | Rating | age |
++-----+--------+--------+-----+
+|  22 | Dustin |      7 |  45 |
+|  29 | Brutus |      1 |  33 |
+|  31 | Lubber |      9 |  55 |
+|  32 | Andy   |      8 |  25 |
+|  58 | Rusty  |     10 |  35 |
++-----+--------+--------+-----+
+
+
+mysql> select * from boats;
++-----+-----------+-------+
+| Bid | Bname     | Color |
++-----+-----------+-------+
+| 101 | Interlake | Blue  |
+| 102 | Interlake | Red   |
+| 103 | Clipper   | Green |
+| 104 | Marine    | Red   |
++-----+-----------+-------+
+4 rows in set (0.00 sec)
+
+select * from reserves;
++-----+-----+------------+
+| Sid | Bid | Day        |
++-----+-----+------------+
+|  22 | 101 | 2004-01-01 |
+|  22 | 102 | 2004-01-01 |
+|  22 | 103 | 2004-02-01 |
+|  31 | 103 | 2005-05-05 |
+|  32 | 104 | 2005-04-07 |
++-----+-----+------------+
+
+Q1.
+ select Sname From sailors where Sid IN (
+    -> select Sid From reserves where  Bid IN(
+    -> select Bid From boats where Color='Red'));
++--------+
+| Sname  |
++--------+
+| Dustin |
+| Andy   |
++--------+
+
+Q2.
+
+mysql> select Sname from sailors where Sid in(
+    -> select DISTINCT(Sid) From reserves );
++--------+
+| Sname  |
++--------+
+| Dustin |
+| Lubber |
+| Andy   |
++--------+
+3 rows in set (0.00 sec)
+
+mysql>
+
+Q3.
+
+Q4.
+ select Sname ,age From sailors   where Sname like 'b__%';
++--------+-----+
+| Sname  | age |
++--------+-----+
+| Brutus |  33 |
++--------+-----+
+1 row in set (0.00 sec)
+
+Q5.
+ select Sname From sailors where Sid IN (
+    -> select DISTINCT(Sid) From reserves where  Bid IN(
+    -> select Bid From boats where Color IN('Red','Green')));
++--------+
+| Sname  |
++--------+
+| Dustin |
+| Lubber |
+| Andy   |
++--------+
+
+
+Q7
+select * from sailors where Rating =(select MAX(Rating) from sailors);
++-----+-------+--------+-----+
+| Sid | Sname | Rating | age |
++-----+-------+--------+-----+
+|  58 | Rusty |     10 |  35 |
++-----+-------+--------+-----+
+1 row in set (0.00 sec)
+
+Q8.
+select * from sailors where age=(select MAX(age) from sailors);
++-----+--------+--------+-----+
+| Sid | Sname  | Rating | age |
++-----+--------+--------+-----+
+|  31 | Lubber |      9 |  55 |
++-----+--------+--------+-----+
+1 row in set (0.00 sec)
+
+Q9.
+select COUNT(DISTINCT(Sname)) from sailors;
++------------------------+
+| COUNT(DISTINCT(Sname)) |
++------------------------+
+|                      5 |
++------------------------+
+1 row in set (0.00 sec)
+
+
+Q10.
+select count(*) from sailors where age>=18;
++----------+
+| count(*) |
++----------+
+|        5 |
++----------+
+1 row in set (0.00 sec)
+
+Q21.
+select * from customer where ReferredBy is not null;
++--------+-------------+------------+
+| CustID | Name        | ReferredBy |
++--------+-------------+------------+
+|      2 | Dolly Dilly |          1 |
+|      3 | Meena Kimi  |          2 |
++--------+-------------+------------+
+2 rows in set (0.00 sec)
+
+Q22.
